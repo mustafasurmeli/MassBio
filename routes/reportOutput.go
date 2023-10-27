@@ -3,6 +3,7 @@ package routes
 import (
 	"WebAPI1/database"
 	"WebAPI1/models"
+	"fmt"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -33,4 +34,13 @@ func GetReportOutputs(c *fiber.Ctx) error {
 		response = append(response, responseRO)
 	}
 	return c.Status(200).JSON(response)
+}
+func Sort(c *fiber.Ctx, column string, direction string) error {
+	reportOutputs := []models.ReportOutput{}
+	sql := "SELECT * from report_outputs"
+	sql = fmt.Sprintf("%s ORDER BY %s %s", sql, column, direction)
+	database.Database.Db.Raw(sql).Scan(&reportOutputs)
+	return c.JSON(fiber.Map{
+		"data": reportOutputs,
+	})
 }
